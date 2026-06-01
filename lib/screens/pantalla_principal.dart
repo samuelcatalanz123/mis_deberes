@@ -52,6 +52,22 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
     }
   }
 
+  // Asigna un color fijo a cada materia (siempre el mismo para la misma
+  // materia) eligiéndolo de una paleta según el nombre.
+  Color _colorMateria(String materia) {
+    const paleta = [
+      Colors.blue,
+      Colors.green,
+      Colors.purple,
+      Colors.teal,
+      Colors.brown,
+      Colors.pink,
+      Colors.indigo,
+      Colors.deepOrange,
+    ];
+    return paleta[materia.hashCode.abs() % paleta.length];
+  }
+
   Color _color(Deber d) {
     switch (d.urgencia(DateTime.now())) {
       case Urgencia.atrasado:
@@ -97,11 +113,29 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                               d.hecho ? TextDecoration.lineThrough : null,
                         ),
                       ),
-                      subtitle: Text(
-                        '${d.materia}  ·  ${DateFormat('EEE d MMM', 'es').format(d.fechaEntrega)}',
-                        style: TextStyle(
-                          color: d.hecho ? Colors.grey : _color(d),
-                        ),
+                      subtitle: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _colorMateria(d.materia).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              d.materia,
+                              style: TextStyle(
+                                color: _colorMateria(d.materia),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            DateFormat('EEE d MMM', 'es').format(d.fechaEntrega),
+                            style: TextStyle(color: d.hecho ? Colors.grey : _color(d)),
+                          ),
+                        ],
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
