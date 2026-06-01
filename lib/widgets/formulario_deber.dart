@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/deber.dart';
 
-/// Muestra un diálogo para crear un deber. Devuelve el Deber creado, o null si
-/// se cancela.
-Future<Deber?> mostrarFormularioDeber(BuildContext context) {
-  final tituloCtrl = TextEditingController();
-  final materiaCtrl = TextEditingController();
-  DateTime fecha = DateTime.now().add(const Duration(days: 1));
+/// Muestra un diálogo para crear o editar un deber.
+///
+/// - Si [deber] es null: crea uno nuevo y lo devuelve.
+/// - Si [deber] tiene un valor: precarga sus datos, le aplica los cambios y
+///   devuelve el MISMO deber actualizado.
+///
+/// Devuelve null si se cancela.
+Future<Deber?> mostrarFormularioDeber(BuildContext context, {Deber? deber}) {
+  final editando = deber != null;
+  final tituloCtrl = TextEditingController(text: deber?.titulo ?? '');
+  final materiaCtrl = TextEditingController(text: deber?.materia ?? '');
+  DateTime fecha = deber?.fechaEntrega ?? DateTime.now().add(const Duration(days: 1));
 
   return showDialog<Deber>(
     context: context,
@@ -14,7 +20,7 @@ Future<Deber?> mostrarFormularioDeber(BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: const Text('Nuevo deber'),
+            title: Text(editando ? 'Editar deber' : 'Nuevo deber'),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -60,17 +66,28 @@ Future<Deber?> mostrarFormularioDeber(BuildContext context) {
               ElevatedButton(
                 onPressed: () {
                   if (tituloCtrl.text.trim().isEmpty) return; // título obligatorio
-                  Navigator.pop(
-                    context,
-                    Deber(
-                      id: DateTime.now().microsecondsSinceEpoch.toString(),
-                      titulo: tituloCtrl.text.trim(),
-                      materia: materiaCtrl.text.trim().isEmpty
-                          ? 'General'
-                          : materiaCtrl.text.trim(),
-                      fechaEntrega: fecha,
-                    ),
-                  );
+                  final titulo = tituloCtrl.text.trim();
+                  final materia = materiaCtrl.text.trim().isEmpty
+                      ? 'General'
+                      : materiaCtrl.text.trim();
+                  if (editando) {
+                    // Editar: actualizamos el mismo deber.
+                    deber.titulo = titulo;
+                    deber.materia = materia;
+                    deber.fechaEntrega = fecha;
+                    Navigator.pop(context, deber);
+                  } else {
+                    // Nuevo: creamos uno con id propio.
+                    Navigator.pop(
+                      context,
+                      Deber(
+                        id: DateTime.now().microsecondsSinceEpoch.toString(),
+                        titulo: titulo,
+                        materia: materia,
+                        fechaEntrega: fecha,
+                      ),
+                    );
+                  }
                 },
                 child: const Text('Guardar'),
               ),

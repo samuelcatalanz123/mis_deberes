@@ -44,6 +44,14 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
     }
   }
 
+  Future<void> _editar(Deber d) async {
+    final editado = await mostrarFormularioDeber(context, deber: d);
+    if (editado != null) {
+      // El deber se actualizó en sitio; solo guardamos y reordenamos.
+      await _guardar();
+    }
+  }
+
   Color _color(Deber d) {
     switch (d.urgencia(DateTime.now())) {
       case Urgencia.atrasado:
@@ -68,6 +76,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                   itemBuilder: (context, i) {
                     final d = _deberes[i];
                     return ListTile(
+                      onTap: () => _editar(d),
                       leading: Checkbox(
                         value: d.hecho,
                         onChanged: (v) {
