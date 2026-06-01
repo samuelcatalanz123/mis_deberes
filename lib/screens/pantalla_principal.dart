@@ -52,6 +52,31 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
     }
   }
 
+  // Pide confirmación antes de borrar, para no perder un deber por accidente.
+  Future<void> _confirmarBorrar(Deber d) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Borrar deber?'),
+        content: Text('Se eliminará "${d.titulo}". Esto no se puede deshacer.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Borrar'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      _deberes.remove(d);
+      await _guardar();
+    }
+  }
+
   // Asigna un color fijo a cada materia (siempre el mismo para la misma
   // materia) eligiéndolo de una paleta según el nombre.
   Color _colorMateria(String materia) {
@@ -139,10 +164,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () {
-                          _deberes.removeAt(i);
-                          _guardar();
-                        },
+                        onPressed: () => _confirmarBorrar(d),
                       ),
                     );
                   },
