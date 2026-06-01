@@ -1,17 +1,60 @@
-# mis_deberes
+# 📚 Mis Deberes
 
-A new Flutter project.
+App móvil (Flutter) para apuntar y organizar los deberes del colegio. Hecha por
+[Samuel Catalán](https://github.com/samuelcatalanz123).
 
-## Getting Started
+## ▶️ Pruébala en vivo
 
-This project is a starting point for a Flutter application.
+👉 **https://samuelcatalanz123.github.io/mis-deberes-web/**
 
-A few resources to get you started if this is your first Flutter project:
+(Se abre en el navegador, también desde el teléfono. Tus deberes se guardan en
+tu propio dispositivo.)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## ✨ Qué hace
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- ➕ Agregar un deber con **título, materia y fecha de entrega**.
+- ✏️ **Editar** un deber (tócalo para cambiarlo).
+- ✅ **Marcar como hecho** (se tacha y baja al final).
+- 🗑️ **Borrar** con confirmación (para no perder nada por accidente).
+- ⏰ **Orden por urgencia** y colores: 🔴 atrasado, 🟠 hoy/mañana.
+- 🎨 Cada **materia con su propio color**.
+- 🔢 **Contador de pendientes** en el título.
+- 💾 **Guardado local**: tus deberes siguen ahí aunque cierres la app.
+
+## 🛠️ Tecnología
+
+- **Flutter** (Dart)
+- **shared_preferences** — guardado local (la lista se guarda como JSON)
+- **intl** — fechas en español
+
+## 🚀 Cómo correrlo
+
+```bash
+flutter pub get
+flutter run            # en un dispositivo/emulador
+# o en el navegador:
+flutter run -d web-server --web-port 8095
+```
+
+## 🧪 Pruebas
+
+```bash
+flutter test
+```
+
+Hay pruebas del modelo (JSON, urgencia, orden) y del guardado.
+
+## 📁 Estructura
+
+```
+lib/
+  models/deber.dart               # el modelo Deber + urgencia + orden
+  services/almacenamiento.dart    # guardar / cargar (shared_preferences)
+  widgets/formulario_deber.dart   # formulario para crear/editar
+  screens/pantalla_principal.dart # la lista y sus acciones
+  main.dart                       # arranque de la app
+```
+
+---
+
+Hecho con 💙 aprendiendo Flutter.
