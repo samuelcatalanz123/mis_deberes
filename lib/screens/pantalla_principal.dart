@@ -14,6 +14,19 @@ class PantallaPrincipal extends StatefulWidget {
 class _PantallaPrincipalState extends State<PantallaPrincipal> {
   List<Deber> _deberes = [];
   bool _cargando = true;
+  String _filtro = 'todos'; // 'todos' | 'pendientes' | 'hechos'
+
+  /// Los deberes que se muestran según el filtro elegido.
+  List<Deber> get _visibles {
+    switch (_filtro) {
+      case 'pendientes':
+        return _deberes.where((d) => !d.hecho).toList();
+      case 'hechos':
+        return _deberes.where((d) => d.hecho).toList();
+      default:
+        return _deberes;
+    }
+  }
 
   @override
   void initState() {
@@ -104,6 +117,29 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
     }
   }
 
+  // Barra con los tres filtros (Todos / Pendientes / Hechos).
+  Widget _barraFiltros() {
+    Widget chip(String valor, String etiqueta) {
+      return ChoiceChip(
+        label: Text(etiqueta),
+        selected: _filtro == valor,
+        onSelected: (_) => setState(() => _filtro = valor),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Wrap(
+        spacing: 8,
+        children: [
+          chip('todos', 'Todos'),
+          chip('pendientes', 'Pendientes'),
+          chip('hechos', 'Hechos'),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Cuántos deberes faltan por entregar (no hechos).
@@ -116,13 +152,21 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
       appBar: AppBar(title: Text(titulo)),
       body: _cargando
           ? const Center(child: CircularProgressIndicator())
-          : _deberes.isEmpty
-              ? const Center(child: Text('No tienes deberes. ¡Agrega uno con +!'))
-              : ListView.builder(
-                  itemCount: _deberes.length,
-                  itemBuilder: (context, i) {
-                    final d = _deberes[i];
-                    return ListTile(
+          : Column(
+              children: [
+                _barraFiltros(),
+                Expanded(
+                  child: _visibles.isEmpty
+                      ? Center(
+                          child: Text(_deberes.isEmpty
+                              ? 'No tienes deberes. ¡Agrega uno con +!'
+                              : 'No hay deberes en este filtro.'),
+                        )
+                      : ListView.builder(
+                          itemCount: _visibles.length,
+                          itemBuilder: (context, i) {
+                            final d = _visibles[i];
+                            return ListTile(
                       onTap: () => _editar(d),
                       leading: Checkbox(
                         value: d.hecho,
@@ -167,8 +211,11 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                         onPressed: () => _confirmarBorrar(d),
                       ),
                     );
-                  },
+                          },
+                        ),
                 ),
+              ],
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _agregar,
         child: const Icon(Icons.add),
