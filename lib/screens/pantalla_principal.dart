@@ -65,8 +65,14 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
 
   @override
   Widget build(BuildContext context) {
+    // Cuántos deberes faltan por entregar (no hechos).
+    final pendientes = _deberes.where((d) => !d.hecho).length;
+    final titulo = pendientes == 0
+        ? 'Mis Deberes'
+        : 'Mis Deberes · $pendientes pendiente${pendientes == 1 ? '' : 's'}';
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis Deberes')),
+      appBar: AppBar(title: Text(titulo)),
       body: _cargando
           ? const Center(child: CircularProgressIndicator())
           : _deberes.isEmpty
