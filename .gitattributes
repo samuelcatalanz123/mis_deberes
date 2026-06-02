@@ -1,0 +1,12 @@
+# Que GitHub (Linguist) NO cuente el codigo generado de las plataformas,
+# para que el repo se muestre como Dart (Flutter) y no como C++.
+android/** linguist-vendored
+ios/** linguist-vendored
+linux/** linguist-vendored
+macos/** linguist-vendored
+windows/** linguist-vendored
+web/** linguist-vendored
+test/** linguist-vendored
+*.cpp linguist-vendored
+*.cc linguist-vendored
+*.h linguist-vendored
